@@ -5,14 +5,25 @@ Playwright-based test automation framework for the Tourist E-Wallet Back Office 
 ## Prerequisites
 
 - Node.js 18+
-- Google Chrome installed at `/opt/google/chrome/chrome`
-- Linux environment (tested on Ubuntu)
+- Google Chrome (automatically detected on all platforms)
+
+### Supported Platforms
+
+| Platform | Chrome Locations (auto-detected) |
+|----------|----------------------------------|
+| **Windows** | `Program Files`, `Program Files (x86)`, `LocalAppData` |
+| **macOS** | `/Applications`, `~/Applications` |
+| **Linux** | `/opt/google/chrome`, `/usr/bin/google-chrome`, `/usr/bin/chromium` |
+
+> If Chrome is not found, Playwright will use its bundled Chromium browser.
 
 ## Installation
 
 ```bash
 npm install
 ```
+
+This will automatically install Playwright's Chromium browser via the `postinstall` script.
 
 ## Running Tests
 
@@ -61,6 +72,7 @@ tourist-automate-test/
 │   ├── global-limit/          # Limit configuration
 │   ├── reports/               # Report generation
 │   └── fixtures/              # Shared test data and helpers
+├── scripts/                   # Cross-platform helper scripts
 ├── test-results/              # Test artifacts (git-ignored)
 ├── test-reports/              # HTML and JSON reports (git-ignored)
 ├── screenshots/               # Failure screenshots (git-ignored)
@@ -89,6 +101,16 @@ import { test, expect, TEST_DATA, SELECTORS, login } from '../fixtures/test-fixt
 | `chrome-headed` | Visible Chrome with your profile (requires closing Chrome) |
 | `chrome-test` | Visible Chrome with copied profile (Chrome can stay open) |
 
+## Cross-Platform Profile Paths
+
+The framework automatically detects Chrome profile locations:
+
+| Platform | Chrome Profile | Test Profile |
+|----------|----------------|--------------|
+| **Windows** | `%LOCALAPPDATA%\Google\Chrome\User Data` | `%LOCALAPPDATA%\playwright-chrome-profile` |
+| **macOS** | `~/Library/Application Support/Google/Chrome` | `~/Library/Application Support/playwright-chrome-profile` |
+| **Linux** | `~/.config/google-chrome` | `~/.config/playwright-chrome-profile` |
+
 ## Configuration
 
 Key settings in `playwright.config.ts`:
@@ -98,6 +120,7 @@ Key settings in `playwright.config.ts`:
 - **Screenshots**: Captured on every test
 - **Video**: Retained on failure
 - **Retries**: 2 retries in CI, 0 locally
+- **Sandbox**: Disabled on Linux only (required for some environments)
 
 ## Test Naming Convention
 
@@ -111,3 +134,20 @@ Test IDs correspond to entries in `All-Test-Case.md`.
 - Screenshots are saved to `screenshots/` on failure
 - HTML reports available via `npm run report`
 - Video recordings retained on failure in `test-results/`
+
+## CI/CD
+
+The framework is CI-ready:
+
+```yaml
+# Example GitHub Actions
+- name: Install dependencies
+  run: npm ci
+
+- name: Run tests
+  run: npm test
+```
+
+Environment variables:
+- `CI=true`: Enables 2 retries on failure
+- `RUN_CHROME_PROFILES=1`: Enables profile-based browser projects

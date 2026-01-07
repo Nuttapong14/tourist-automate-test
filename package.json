@@ -1,12 +1,22 @@
 {
+  "name": "tourist-automate-test",
+  "version": "1.0.0",
+  "description": "Playwright test automation for Tourist E-Wallet Back Office",
   "scripts": {
     "test": "npx playwright test --project=chromium",
-    "test:headed": "npx playwright test --project=chrome-headed",
-    "test:gmail": "npx playwright test --project=chrome-test",
-    "setup:profile": "rm -rf ~/.config/playwright-chrome-profile && cp -r ~/.config/google-chrome ~/.config/playwright-chrome-profile && echo 'Profile copied successfully! You can now run: npm run test:gmail'",
-    "report": "npx playwright show-report test-reports/html"
+    "test:headed": "cross-env RUN_CHROME_PROFILES=1 npx playwright test --project=chrome-headed",
+    "test:gmail": "cross-env RUN_CHROME_PROFILES=1 npx playwright test --project=chrome-test",
+    "setup:profile": "node scripts/setup-profile.js",
+    "report": "npx playwright show-report test-reports/html",
+    "postinstall": "npx playwright install chromium"
   },
   "dependencies": {
     "@playwright/test": "^1.57.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
