@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "test": "npx playwright test --project=chromium",
+    "test:headed": "npx playwright test --project=chrome-headed",
+    "test:gmail": "npx playwright test --project=chrome-test",
+    "setup:profile": "rm -rf ~/.config/playwright-chrome-profile && cp -r ~/.config/google-chrome ~/.config/playwright-chrome-profile && echo 'Profile copied successfully! You can now run: npm run test:gmail'",
+    "report": "npx playwright show-report test-reports/html"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.57.0"
+  }
+}
